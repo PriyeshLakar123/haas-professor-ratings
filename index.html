@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haas Rate My Prof</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, #f9f5e8 0%, #eef4fb 100%); min-height: 100vh; }
+
+.header {
+  background: linear-gradient(90deg, #003262 0%, #004a8f 100%);
+  padding: 22px 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 24px rgba(0,50,98,0.25);
+}
+.header-title { font-family: 'Playfair Display', serif; font-size: 22px; color: #FDB515; }
+.header-sub { font-size: 12px; color: #a8c4e0; margin-top: 2px; }
+.header-badge { margin-left: auto; background: rgba(253,181,21,0.15); border: 1px solid rgba(253,181,21,0.3); border-radius: 20px; padding: 5px 14px; font-size: 11px; color: #FDB515; font-weight: 600; }
+
+.body { max-width: 1050px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 1fr 290px; gap: 24px; }
+.subtitle { font-family: 'Playfair Display', serif; font-size: 13px; color: #7a6a3a; margin-bottom: 18px; font-style: italic; }
+.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.card { background: linear-gradient(135deg, #fff 0%, #fefcf3 100%); border: 1.5px solid #e8ddb5; border-radius: 14px; padding: 18px; box-shadow: 0 4px 16px rgba(0,50,98,0.07); transition: transform 0.2s, box-shadow 0.2s; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,50,98,0.13); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.card-emoji { font-size: 20px; margin-bottom: 2px; }
+.card-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #003262; }
+.card-course { font-size: 10px; color: #7a6a3a; margin-top: 2px; font-style: italic; }
+.avg-badge { background: linear-gradient(135deg, #003262, #004a8f); color: #FDB515; border-radius: 10px; padding: 5px 10px; text-align: center; min-width: 46px; }
+.avg-num { font-size: 18px; font-weight: 800; font-family: serif; line-height: 1; }
+.avg-label { font-size: 8px; color: #a8c4e0; margin-top: 1px; }
+
+.star-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.star-label { width: 62px; font-size: 11px; color: #7a6a3a; font-style: italic; }
+.stars { display: flex; gap: 2px; }
+.star { font-size: 18px; cursor: pointer; color: #d9c88a; transition: transform 0.1s, color 0.1s; display: inline-block; user-select: none; }
+.star.filled { color: #FDB515; }
+.star-val { font-size: 10px; color: #003262; font-weight: 700; margin-left: 2px; }
+
+.leaderboard { background: linear-gradient(160deg, #003262 0%, #00234a 100%); border-radius: 16px; padding: 20px 18px; color: white; position: sticky; top: 20px; height: fit-content; }
+.lb-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #FDB515; margin-bottom: 3px; }
+.lb-sub { font-size: 10px; color: #a8c4e0; margin-bottom: 16px; }
+.lb-empty { font-size: 12px; color: #5a8ab0; font-style: italic; text-align: center; padding: 30px 0; line-height: 1.8; }
+.lb-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 9px; margin-bottom: 7px; background: rgba(255,255,255,0.05); border: 1px solid transparent; }
+.lb-item.gold { background: rgba(253,181,21,0.15); border-color: rgba(253,181,21,0.3); }
+.lb-rank { font-size: 12px; font-weight: 800; width: 24px; text-align: center; color: #5a8ab0; }
+.lb-info { flex: 1; }
+.lb-name { font-size: 12px; font-weight: 700; color: white; }
+.lb-course { font-size: 9px; color: #7aabcf; margin-top: 1px; }
+.lb-avg { font-family: serif; font-size: 17px; font-weight: 800; color: #FDB515; }
+.lb-footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 9px; color: #3a6a9a; text-align: center; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="font-size:36px">🐻</div>
+  <div>
+    <div class="header-title">Haas Rate My Prof</div>
+    <div class="header-sub">UC Berkeley · Haas School of Business</div>
+  </div>
+  <div class="header-badge">⭐ Rate your professors</div>
+</div>
+
+<div class="body">
+  <div>
+    <div class="subtitle">Click the stars to rate each professor across three dimensions</div>
+    <div class="cards-grid" id="cards"></div>
+  </div>
+  <div class="leaderboard">
+    <div class="lb-title">🏆 Leaderboard</div>
+    <div class="lb-sub">Updates live as you rate</div>
+    <div id="lb-list"></div>
+    <div class="lb-footer">UC Berkeley · Haas School of Business<br><span style="color:#FDB515">⚡</span> Built with HTML + JS</div>
+  </div>
+</div>
+
+<script>
+const professors = [
+  { id: 1, name: "Laura Tyson", course: "Business & Public Policy", emoji: "🏛️" },
+  { id: 2, name: "David Teece", course: "Global Strategy & Innovation", emoji: "🌍" },
+  { id: 3, name: "Ned Augenblick", course: "Behavioral Economics", emoji: "🧠" },
+  { id: 4, name: "Don Moore", course: "Management of Organizations", emoji: "🧩" },
+  { id: 5, name: "Rhonda Shrader", course: "Entrepreneurship", emoji: "🚀" },
+  { id: 6, name: "Ikhlaq Sidhu", course: "Innovation & Technology", emoji: "💡" },
+];
+
+const DIMS = ["Teaching", "Clarity", "Workload"];
+const ratings = {};
+professors.forEach(p => ratings[p.id] = {});
+
+function getAvg(id) {
+  const vals = DIMS.map(d => ratings[id][d]).filter(Boolean);
+  return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : null;
+}
+
+function buildCard(prof) {
+  const avg = getAvg(prof.id);
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.id = 'card-' + prof.id;
+  div.innerHTML = `
+    <div class="card-top">
+      <div>
+        <div class="card-emoji">${prof.emoji}</div>
+        <div class="card-name">${prof.name}</div>
+        <div class="card-course">${prof.course}</div>
+      </div>
+      ${avg ? `<div class="avg-badge"><div class="avg-num">${avg}</div><div class="avg-label">avg</div></div>` : '<div style="width:46px"></div>'}
+    </div>
+    ${DIMS.map(dim => `
+      <div class="star-row">
+        <span class="star-label">${dim}</span>
+        <div class="stars" data-prof="${prof.id}" data-dim="${dim}">
+          ${[1,2,3,4,5].map(s => `<span class="star${(ratings[prof.id][dim]||0)>=s?' filled':''}" data-val="${s}">★</span>`).join('')}
+        </div>
+        ${ratings[prof.id][dim] ? `<span class="star-val">${ratings[prof.id][dim]}.0</span>` : ''}
+      </div>`).join('')}`;
+  return div;
+}
+
+function refreshCard(prof) {
+  const old = document.getElementById('card-' + prof.id);
+  const fresh = buildCard(prof);
+  old.replaceWith(fresh);
+}
+
+function renderLeaderboard() {
+  const ranked = professors
+    .map(p => ({ ...p, avg: parseFloat(getAvg(p.id))||0, n: DIMS.filter(d=>ratings[p.id][d]).length }))
+    .filter(p => p.n > 0)
+    .sort((a,b) => b.avg - a.avg);
+  const lb = document.getElementById('lb-list');
+  if (!ranked.length) { lb.innerHTML = '<div class="lb-empty">Rate professors to see<br>the leaderboard appear ✨</div>'; return; }
+  const medals = ['🥇','🥈','🥉'];
+  const rankColors = ['#FDB515','#c0c0c0','#cd7f32'];
+  lb.innerHTML = ranked.map((p,i) => `
+    <div class="lb-item ${i===0?'gold':''}">
+      <div class="lb-rank ${i===0?'gold':''}" style="color:${rankColors[i]||'#5a8ab0'};${i<3?'font-size:18px':''}">
+        ${i<3?medals[i]:'#'+(i+1)}
+      </div>
+      <div class="lb-info"><div class="lb-name">${p.name}</div><div class="lb-course">${p.course}</div></div>
+      <div class="lb-avg">${p.avg.toFixed(1)}</div>
+    </div>`).join('');
+}
+
+// Initial render
+const grid = document.getElementById('cards');
+professors.forEach(p => grid.appendChild(buildCard(p)));
+renderLeaderboard();
+
+// Events
+grid.addEventListener('mouseover', e => {
+  const star = e.target.closest('.star'); if (!star) return;
+  const row = star.closest('.stars');
+  const val = parseInt(star.dataset.val);
+  row.querySelectorAll('.star').forEach(s => {
+    s.style.color = parseInt(s.dataset.val) <= val ? '#FDB515' : '#d9c88a';
+    s.style.transform = parseInt(s.dataset.val) <= val ? 'scale(1.2)' : 'scale(1)';
+  });
+});
+grid.addEventListener('mouseout', e => {
+  const star = e.target.closest('.star'); if (!star) return;
+  const row = star.closest('.stars');
+  const profId = parseInt(row.dataset.prof), dim = row.dataset.dim;
+  row.querySelectorAll('.star').forEach(s => {
+    const f = (ratings[profId][dim]||0) >= parseInt(s.dataset.val);
+    s.style.color = f ? '#FDB515' : '#d9c88a';
+    s.style.transform = 'scale(1)';
+  });
+});
+grid.addEventListener('click', e => {
+  const star = e.target.closest('.star'); if (!star) return;
+  const row = star.closest('.stars');
+  const profId = parseInt(row.dataset.prof), dim = row.dataset.dim;
+  ratings[profId][dim] = parseInt(star.dataset.val);
+  refreshCard(professors.find(p=>p.id===profId));
+  renderLeaderboard();
+});
+</script>
+</body>
+</html>
